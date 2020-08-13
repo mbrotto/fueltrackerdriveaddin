@@ -1,0 +1,15 @@
+{
+  "name": "dialog-polyfill",
+  "homepage": "https://github.com/GoogleChrome/dialog-polyfill",
+  "version": "0.5.3",
+  "_release": "0.5.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.5.3",
+    "commit": "ddf9a02425a1a4ceb306c56b5a588a4e513948d1"
+  },
+  "_source": "https://github.com/GoogleChrome/dialog-polyfill.git",
+  "_target": "^0.5.3",
+  "_originalSource": "dialog-polyfill",
+  "_direct": true
+}
