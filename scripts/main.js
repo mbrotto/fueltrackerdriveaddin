@@ -13,6 +13,7 @@ geotab.addin.driveFuelTracker = () => {
     let elMap;
     let elDevice;
     let elHeader;
+    // Root container
     let elContent;
     let elMenu;
     let elError;
@@ -1149,6 +1150,12 @@ geotab.addin.driveFuelTracker = () => {
             elMapPanelBtn = document.querySelector('[href="#map-panel"]');
             elNoDeviceDialog = document.querySelector('#tracker-no-device-dialog');
 
+            if (state.translate) {
+                state.translate(elContent || '');
+                var volume = state.translate('Volume');
+                console.log(`Volume translation = ${volume}`);
+            }
+
             view();
 
             loading(true);
@@ -1205,9 +1212,9 @@ geotab.addin.driveFuelTracker = () => {
             transactionTmplFn = doT.template(document.getElementById('transaction-tmps').text);
             transactionDetailsTmplFn = doT.template(document.getElementById('transaction-details-tmps').text);
 
-            if (state.translate) {
-                state.translate(elContent || '');
-            }
+            // if (state.translate) {
+            //     state.translate(elContent || '');
+            // }
 
             initializeCallback();
         },
@@ -1224,12 +1231,17 @@ geotab.addin.driveFuelTracker = () => {
          * @param state The page state object allows access to URL, page navigation and global group filter.
          */
         focus(freshApi, freshState) {
+            
             // TODO: Remove when drive bug fixed, not passing in api and state to focus
             if (freshApi) {
                 api = freshApi;
             }
             if (freshState) {
                 state = freshState;
+            }
+
+            if (state.translate) {
+                state.translate(elContent || '');
             }
 
             // console.log(`state.device.id: ${state.device.id}`);

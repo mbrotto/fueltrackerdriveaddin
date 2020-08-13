@@ -1,12 +1,13 @@
 {
     "name": "Fuel Tracker",
-    "supportEmail": "brettkelley@geotab.com",
+    "supportEmail": "support@geotab.com",
     "version": "1.0",
     "items": [{
             "url": "fuelTracker.html",
             "path": "ActivityLink/",
             "menuName": {
-                "en": "Fuel Tracker"
+                "en": "Fuel Tracker",
+                "fr": "Fuel Tracker (French menu)"
             }
         }
     ]

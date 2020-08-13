@@ -8,7 +8,8 @@
     "path": "DriveAppLink/",
     "icon": "images/icon.svg",
     "menuName": {
-      "en": "Fuel Tracker"
+      "en": "Fuel Tracker",
+      "fr": "Fuel Tracker (French menu)"
     }
   }],
   "dev": {
