@@ -1212,10 +1212,6 @@ geotab.addin.driveFuelTracker = () => {
             transactionTmplFn = doT.template(document.getElementById('transaction-tmps').text);
             transactionDetailsTmplFn = doT.template(document.getElementById('transaction-details-tmps').text);
 
-            // if (state.translate) {
-            //     state.translate(elContent || '');
-            // }
-
             initializeCallback();
         },
 
