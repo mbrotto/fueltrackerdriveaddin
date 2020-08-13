@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fuel Tracker</title>
+
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="../bower_components/ol3-bower-dist/dist/ol.css">
+    <link rel="stylesheet" href="../bower_components/dialog-polyfill/dialog-polyfill.css">
+    <link rel="stylesheet" href="../bower_components/material-design-lite/material.css">
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="../bower_components/moment/moment.js"></script>
+    <script src="../bower_components/chart.js/dist/Chart.js"></script>
+    <script src="../bower_components/ol3-bower-dist/dist/ol.js"></script>
+    <script src="../bower_components/dialog-polyfill/dialog-polyfill.js"></script>
+    <script src="../bower_components/classlist/classList.js"></script>
+    <script src="../bower_components/material-design-lite/material.js"></script>
+    <!-- endbower -->
+    <script src="scripts/vendor/doT.js"></script>
+    <script src="scripts/vendor/date.format.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/localUnits.js"></script>
+    <script src="scripts/securityCalculator.js"></script>
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
+
+</head>
+
+<body>
+
+    <div id="fuelTracker" style="overflow: auto; height: inherit; padding-bottom: 35px;">
+
+        <!-- Loading -->
+        <div class="loading mdl-spinner mdl-js-spinner is-active"></div>
+
+        <!-- Vehicle -->
+        <div class="mdl-grid no-bottom">
+            <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col card no-bottom bottom-border" id="tracker-header">
+                <div class="mdl-card__title">
+                    <i class="icon truck"></i>
+                    <h2 class="mdl-card__title-text" id="tracker-device">...</h2>
+                </div>
+                <div class="mdl-card__menu">
+                    <button id="tracker-date-select" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                        <i class="icon calendar"></i>
+                    </button>
+                </div>
+            </div>
+
+            <ul id="tracker-menu" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="tracker-date-select">
+                <li class="mdl-menu__item" period="0">This Month</li>
+                <li class="mdl-menu__item" period="2">Last 3 Months</li>
+                <li class="mdl-menu__item" period="5">Last 6 Months</li>
+                <li class="mdl-menu__item" period="11">Last 12 Months</li>
+            </ul>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+            <div class="mdl-grid no-top no-bottom">
+                <div class="mdl-tabs__tab-bar mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col card no-top">
+                    <a href="#transactions-panel" class="mdl-tabs__tab mdl-button--icon is-active"><i class="icon list"></i></a>
+                    <a href="#add-panel" class="mdl-tabs__tab mdl-button--icon"><i class="icon plus"></i></a>
+                    <a href="#charts-panel" class="mdl-tabs__tab mdl-button--icon"><i class="icon bar-chart"></i></a>
+                    <a href="#map-panel" class="mdl-tabs__tab mdl-button--icon"><i class="icon map-marker"></i></a>
+                </div>
+            </div>
+
+            <!-- Transactions -->
+            <div class="mdl-tabs__panel is-active hidden" id="transactions-panel">
+                <div id="tracker-transactions" class="mdl-grid no-top"></div>
+            </div>
+
+            <!-- Add -->
+            <div class="mdl-tabs__panel hidden" id="add-panel">
+                <div id="tracker-add" class="mdl-grid no-top"></div>
+            </div>
+
+            <!-- Charts -->
+            <div class="mdl-tabs__panel hidden" id="charts-panel">
+                <div id="tracker-charts" class="mdl-grid no-top">
+                    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone">
+                        <div class="mdl-card__title">
+                            <h3 class="mdl-card__title-text">Fuel Economy</h3>
+                        </div>
+                        <canvas id="tracker-chart-0"></canvas>
+                    </div>
+                    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone">
+                        <div class="mdl-card__title">
+                            <h3 class="mdl-card__title-text">Fuel Cost</h3>
+                        </div>
+                        <canvas id="tracker-chart-1"></canvas>
+                    </div>
+                    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone">
+                        <div class="mdl-card__title">
+                            <h3 class="mdl-card__title-text">Fill-Up Cost</h3>
+                        </div>
+                        <canvas id="tracker-chart-2"></canvas>
+                    </div>
+                    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone">
+                        <div class="mdl-card__title">
+                            <h3 class="mdl-card__title-text">Monthly Cost</h3>
+                        </div>
+                        <canvas id="tracker-chart-3"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="mdl-tabs__panel hidden" id="map-panel">
+                <div class="mdl-grid no-top">
+                    <div id="tracker-map" class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12col" style="width: calc(100% - 32px); height: calc(100% - 180px); position: absolute;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mdl-grid">
+            <!-- No Access -->
+            <div id="tracker-noaccess" class="card mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col hidden">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">Uh-oh, looks like you don't have access</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                    This app requires user clearances for "View fill-ups and fuel transactions" and "Administer fuel transactions". Contact your database administrator to request access.
+                </div>
+            </div>
+
+            <!-- No Results -->
+            <div id="tracker-noresult" class="card mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col hidden">
+                <div class="mdl-card__supporting-text">
+                    Couldn't find any fill-ups. Add a fill-up or try a different period of time.
+                </div>
+            </div>
+
+            <!-- Errors -->
+            <div id="tracker-error" class="card mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col hidden">
+                <div class="mdl-card__supporting-text">
+                    <h5>Uh oh, something went wrong</h5>
+                    <p class="tracker-error-message"></p>
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a id="tracker-retry" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Try Again</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Device Dialog -->
+        <dialog id="tracker-no-device-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">No Vehicle Selected</h4>
+            <div class="mdl-dialog__content">
+                <p>You do not have a vehicle selected. New transactions may not get assigned to the correct vehicle.
+                    Would you like to select a vehicle for the transaction?
+                </p>
+            </div>
+            <div class="mdl-dialog__actions">
+                <button type="button" class="mdl-button yes">Yes, select a vehicle</button>
+                <button type="button" class="mdl-button no">No</button>
+            </div>
+        </dialog>
+
+        <!-- Confirm Dialog -->
+        <dialog id="tracker-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Remove fuel transaction?</h4>
+            <div class="mdl-dialog__content">
+                <p>Would you like to remove this fuel transaction?</p>
+            </div>
+            <div class="mdl-dialog__actions">
+                <button type="button" class="mdl-button remove">Yes, remove it</button>
+                <button type="button" class="mdl-button close">No</button>
+            </div>
+        </dialog>
+
+        <!-- Error Dialog -->
+        <dialog id="tracker-error-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Uh Oh</h4>
+            <div class="mdl-dialog__content">
+                <h5>Something went wrong, try again.</h5>
+                <p class="tracker-error-message"></p>
+            </div>
+            <div class="mdl-dialog__actions">
+                <button type="button" class="mdl-button ok">OK</button>
+            </div>
+        </dialog>
+
+        <!-- Marker icon for map -->
+        <img src="images/map-marker-icon.png" id="tracker-map-marker" class="hidden">
+
+    </div>
+
+    <script id="month-templ" type="text/x-dot-template">
+        <div class="card mdl-card mdl-shadow--2dp mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone">
+            <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">{{=it.month}}</h2>
+            </div>
+            <ul class="mdl-list">
+                {{=it.transactions}}
+            </ul>
+        </div>
+    </script>
+
+    <script id="transaction-tmps" type="text/x-dot-template">
+        <li class="mdl-list__item mdl-list__item--two-line" data-id="#{{=it.id}}">
+            <span class="mdl-list__item-primary-content">
+                <i class="mdl-list__item-avatar text-avatar {{=it.productType === 'NonFuel' ? 'nonfuel' : ''}}">${{=it.cost.toFixed(0)}}</i>
+                <span>{{=it.dateTime.format('mmm dd yyyy')}}</span>
+            <span class="mdl-list__item-sub-title">{{=it.productType === 'NonFuel' ? (it.comments || 'Non-Fuel') : it.consumption}}</span>
+            </span>
+            <span class="mdl-list__item-secondary-content">
+                <span class="mdl-list__item-secondary-info">{{=it.volume.toFixed(0)}} {{=it.productType !== 'NonFuel' ? it.volumeAbbr : ''}}</span>
+            </span>
+        </li>
+    </script>
+
+    <script id="transaction-details-tmps" type="text/x-dot-template">
+        <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col" data-id="{{=it.id}}">
+            <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">{{=it.id ? 'Edit' : 'Add'}} Fill-Up</h2>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <form name="transactionForm" novalidate>
+
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input id="tracker-add-volume" class="mdl-textfield__input" type="number" step="0.001" pattern="-?[0-9]*(\.[0-9]+)?" name="volume" value="{{=it.volume}}">
+                                <label class="mdl-textfield__label">Volume</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <select id="tracker-fuel-units" class="mdl-textfield__input" placeholder="Fuel Grade">
+                                    <option {{=it.volumeAbbr==='gal' ? 'selected' : ''}} value="gal">Gallons</option>
+                                    <option {{=it.volumeAbbr==='l' ? 'selected' : ''}} value="l">Liters</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <select id="tracker-add-grade" class="mdl-textfield__input" placeholder="Fuel Grade">
+                                    <option {{=it.productType==='Regular' || it.grade==='1' ? 'selected' : ''}} value="1">Regular (87)</option>
+                                    <option {{=it.productType==='MidGrade' || it.grade==='2' ? 'selected' : ''}} value="2">Mid-Grade (89)</option>
+                                    <option {{=it.productType==='Premium' || it.grade==='3' ? 'selected' : ''}} value="3">Premium (91)</option>
+                                    <option {{=it.productType==='Super' || it.grade==='4' ? 'selected' : ''}} value="4">Ultra (93+)</option>
+                                    <option {{=it.productType==='Diesel' || it.grade==='5' ? 'selected' : ''}} value="5">Diesel</option>
+                                    <option {{=it.productType==='E85' || it.grade==='6' ? 'selected' : ''}} value="6">E85 Ethanol</option>
+                                    <option {{=it.productType==='CNG' || it.grade==='7' ? 'selected' : ''}} value="7">CNG (Compressed Natural Gas)</option>
+                                    <option {{=it.productType==='LPG' || it.grade==='8' ? 'selected' : ''}} value="8">LPG (Liquified Propane Gas)</option>
+                                    <option {{=it.productType==='NonFuel' || it.grade==='9' ? 'selected' : ''}} value="9">Non-Fuel</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet mdl-cell--12-col-phone">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label" for="tracker-add-cost-per-unit">Price Per {{=it.units}}</label>
+                                <input id="tracker-add-cost-per-unit" class="mdl-textfield__input" type="number" step="0.001" pattern="-?[0-9]*(\.[0-9]+)?" value="{{=it.costPerUnit && it.costPerUnit.toFixed(3)}}">
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet mdl-cell--12-col-phone">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label">Total Cost</label>
+                                <input id="tracker-add-cost" class="mdl-textfield__input" type="number" step="0.01" pattern="-?[0-9]*(\.[0-9]+)?" value="{{=it.cost && it.cost.toFixed(2)}}">
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <select id="tracker-add-currencyCode" class="mdl-textfield__input" placeholder="Currency Code">
+                                    <option {{=it.currencyCode==='CAD' ? 'selected' : ''}} value="CAD">Canadian Dollars (CAD)</option>
+                                    <option {{=it.currencyCode==='USD' ? 'selected' : ''}} value="USD">US Dollars (USD)</option>
+                                    <option {{=it.currencyCode==='GBP' ? 'selected' : ''}} value="GBP">Pounds (GBP)</option>
+                                    <option {{=it.currencyCode==='EUR' ? 'selected' : ''}} value="EUR">Euro (EUR)</option>
+                                    <option {{=it.currencyCode==='AUS' ? 'selected' : ''}} value="AUS">Australian Dollars (AUS)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label">Date and Time</label>
+                                <input id="tracker-add-date" class="mdl-textfield__input" type="datetime-local" required value="{{=it.dateTime}}">
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label">Odometer (<span id="transaction.distanceAbbr">{{=it.distanceAbbr}}</span>)</label>
+                                <input id="tracker-add-odometer" class="mdl-textfield__input" type="number" step="0" pattern="-?[0-9]*(\.[0-9]+)?" value="{{=it.odometer}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label">Address</label>
+                                <input id="tracker-add-address" class="mdl-textfield__input" type="search" value="Finding address...">
+                                <div id="tracker-add-address-progress" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col">
+                            <div id="map" style="width:100%; height: 240px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col">
+                            <div class="mdl-textfield mdl-js-textfield">
+                                <textarea id="tracker-add-comments" class="mdl-textfield__input" columns="1" md-maxlength="255">{{=it.comments}}</textarea>
+                                <label class="mdl-textfield__label">Comments</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="mdl-card__actions mdl-card--border">
+                <a id="tracker-add-save" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" data-id="{{=it.id}}">Save</a>
+                <a id="tracker-add-remove" class="mdl-button mdl-js-button mdl-js-ripple-effect" {{=it.id ? '' : 'style="display:none"'}}>Remove</a>
+                <a id="tracker-add-cancel" class="mdl-button mdl-js-button mdl-js-ripple-effect">Cancel</a>
+            </div>
+        </div>
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+.icon {
+  width: 24px;
+  height: 24px;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin: 0 0.3em;
+}
+.mdl-button--icon .icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-12px, -12px);
+  transform: translate(-12px, -12px);
+  line-height: 24px;
+  background-size: 80%;
+  margin: 1px 2px;
+}
+
+/* Hack: something in drive is overwriting this */
+.mdl-snackbar {
+  position: fixed !important;
+}
+.mdl-snackbar__action {
+  width: initial;
+}
+.icon.truck {
+  background-image: url('../images/truck.svg');
+}
+.icon.calendar {
+  background-image: url('../images/calendar.svg');
+}
+.icon.arrow-left {
+  background-image: url('../images/arrow-left.svg');
+}
+.icon.list {
+  background-image: url('../images/list.svg');
+}
+.icon.bar-chart {
+  background-image: url('../images/bar-chart.svg');
+}
+.icon.map-marker {
+  background-image: url('../images/map-marker.svg');
+}
+.icon.plus {
+  background-image: url('../images/plus.svg');
+}
+.card {
+  min-height: 0;
+}
+.mdl-card {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.card .mdl-list {
+  margin-top: 0;
+  padding-top: 0;
+}
+.mdl-tabs__panel {
+  width: 100%;
+}
+.graph {
+  padding: 16px 32px;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+}
+.text-avatar {
+  background: #ff80ab;
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 40px;
+  font-size: 0.75em;
+  letter-spacing: 0.05em;
+}
+.text-avatar.nonfuel {
+  background: rgb(139, 195, 74);
+}
+.loading {
+  z-index: 10;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -20px;
+  margin-left: -20px;
+}
+.hidden {
+  display: none;
+}
+.mdl-textfield {
+  width: 100%;
+}
+.mdl-card__supporting-text {
+  width: auto;
+}
+form .mdl-progress {
+  width: 100%;
+}
+.no-bottom {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.no-top {
+  margin-top: 0;
+  padding-top: 0;
+}
+.bottom-border {
+  border-bottom: 1px solid #eee;
+}

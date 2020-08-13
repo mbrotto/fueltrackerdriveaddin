@@ -1,0 +1,20 @@
+{
+  "name": "Drive Fuel Tracker (by Geotab)",
+  "supportEmail": "support@geotab.com",
+  "solutionId": "driveFuelTracker",
+  "version": "1.3.0",
+  "items": [{
+    "url": "fuelTracker.html",
+    "path": "DriveAppLink/",
+    "icon": "images/icon.svg",
+    "menuName": {
+      "en": "Fuel Tracker"
+    }
+  }],
+  "dev": {
+    "root": "fuelTracker",
+    "dist": {
+      "host": "https://app.geotab.com/addins/geotab/drive-fuel-tracker/1.3.0/"
+    }
+  }
+}
